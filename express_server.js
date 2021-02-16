@@ -33,7 +33,6 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortID = generateRandomString(6);
   urlDatabase[shortID] = req.body['longURL'];
-  console.log(urlDatabase);  // Log the POST request body to the console
   res.redirect(`/urls/${shortID}`);
 });
 
@@ -58,11 +57,24 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  
   delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
+
+// app.post("/urls/:shortURL/edit", (req, res) => {
+//   let shortID = req.params.shortURL;
+//   res.redirect(`/urls/${shortID}`);
+// });
+
+app.post("/urls/:shortURL/update", (req, res) => {
+  console.log(req);
+  let shortID = req.params.shortURL;
+  urlDatabase[shortID] = req.body['longURL']
   res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
