@@ -17,17 +17,19 @@ const generateRandomString = function(number) {
   return result;
 }
 //--------------------------------------------------------//
-
+// ------ Database ---------------------------------------
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+//------------ Home page/root-----------------------------
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// ------------made short id = long id ---------------------
 app.post("/urls", (req, res) => {
   let shortID = generateRandomString(6);
   urlDatabase[shortID] = req.body['longURL'];
