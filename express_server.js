@@ -53,10 +53,32 @@ const idRetriever = function(email) {
 }
 //End//
 
+//Filter the urldatabase for logged in user_id//
+const urlsForUser = function(id){
+  let urlDatabaseFiltered = {};
+  for (let url in urlDatabase) {
+    if (urlDatabase[url]['userID'] === id){
+      urlDatabaseFiltered[url] = { longURL: urlDatabase[url]['longURL'], userID: urlDatabase[url]['userID'] }
+    }
+  }
+  return urlDatabaseFiltered;
+}
+
+
 //Database//
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "user1RandomID" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" }
+};
+//End//
+
+//list of all shortURLs//
+const allShortURLs = function(){
+  let shortUrlList = [];
+  for (let url in urlDatabase) {
+    shortUrlList.push(url)
+  }
+  return shortUrlList;
 };
 //End//
 
@@ -77,57 +99,86 @@ const users = {
 
 //Display url_index page to display the current databse//
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user : users[req.cookies['user_id']]};
-  res.render("urls_index", templateVars);
+  let urlDatabaseFiltered = urlsForUser(req.cookies['user_id']);
+  const templateVars = { urls: urlDatabaseFiltered, user : users[req.cookies['user_id']]};
+  if(templateVars.user){
+    res.render("urls_index", templateVars);
+  }else{
+    res.render("urls_login", templateVars);
+  }
 });
 //End//
 
 //Create url_new page to add new URL//
 app.get("/urls/new", (req, res) => {
   const templateVars = {user : users[req.cookies['user_id']]};
-  res.render("urls_new", templateVars);
+  if(templateVars.user){
+    res.render("urls_new", templateVars);
+  }else{
+    res.render("urls_login", templateVars);
+  }
 });
 //End//
 
 // Generate short id for the longURL and add it to the database along with its longURL//
 app.post("/urls", (req, res) => {
+  let userId = req.cookies['user_id']
   let shortID = generateRandomString(6);
-  urlDatabase[shortID] = req.body['longURL'];
+  urlDatabase[shortID] = {longURL: req.body['longURL'], userID: userId };
   res.redirect(`/urls/${shortID}`);
 });
 //End//
 
 //Display individual URL pages//
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user : users[req.cookies['user_id']]};
-  if (templateVars.longURL) {
-    res.render("urls_show", templateVars);
+  let urlDatabaseFiltered = urlsForUser(req.cookies['user_id']);
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabaseFiltered[req.params.shortURL], user : users[req.cookies['user_id']]};
+  if (templateVars.user){
+    if (templateVars.longURL) {
+      res.render("urls_show", templateVars);
+    } else {
+      if (!allShortURLs().includes(req.params.shortURL)) {
+        res.status(404).send("Page not Found");
+      } else {
+        res.status(404).send("Access denied");
+      }
+    }
   } else {
-    res.status(404);
-    res.send("Page not found");
+    res.render("urls_login", templateVars);
   }
 });
 //End//
 
 //Redirect to individual LongURL sites//
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL]['longURL']
   res.redirect(longURL);
 });
 //End//
 
 //Delete a URL from the database//
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  const templateVars = {user : users[req.cookies['user_id']]};
+  if (req.cookies['user_id'] === urlDatabase[req.params.shortURL]['userID']) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");;
+  } else {
+    res.status(404).send("Access denied");
+  }
 });
 //End//
 
 //Update a URL in the database//
 app.post("/urls/:shortURL/update", (req, res) => {
-  let shortID = req.params.shortURL;
-  urlDatabase[shortID] = req.body['longURL']
-  res.redirect("/urls");
+  const templateVars = {user : users[req.cookies['user_id']]};
+  if (req.cookies['user_id'] === urlDatabase[req.params.shortURL]['userID']) {
+    let shortID = req.params.shortURL;
+    urlDatabase[shortID]['longURL'] = req.body['longURL']
+    res.redirect("/urls");
+  }else{
+    res.status(404).send("Access denied");
+  }
+  
 });
 //End//
 
