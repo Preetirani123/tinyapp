@@ -131,20 +131,18 @@ app.post("/urls", (req, res) => {
 
 //Display individual URL pages//
 app.get("/urls/:shortURL", (req, res) => {
-  let urlDatabaseFiltered = urlsForUser(req.cookies['user_id']);
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabaseFiltered[req.params.shortURL], user : users[req.cookies['user_id']]};
-  if (templateVars.user){
-    if (templateVars.longURL) {
-      res.render("urls_show", templateVars);
-    } else {
-      if (!allShortURLs().includes(req.params.shortURL)) {
-        res.status(404).send("Page not Found");
-      } else {
-        res.status(404).send("Access denied");
-      }
-    }
-  } else {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user : users[req.cookies['user_id']]};
+  if (!allShortURLs().includes(req.params.shortURL)) {
+    res.status(404).send("Page not Found");
+  }
+  else if (!templateVars.user) {
     res.render("urls_login", templateVars);
+  }
+  else if (req.cookies['user_id'] === urlDatabase[req.params.shortURL]['userID']){
+    res.render("urls_show", templateVars);
+  }
+  else {
+    res.status(404).send("Access denied");
   }
 });
 //End//
