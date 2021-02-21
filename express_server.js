@@ -78,7 +78,7 @@ app.get("/urls/:shortURL", (req, res) => {
   if (!allShortURLs(urlDatabase).includes(req.params.shortURL)) {
     res.status(404).send("The Tiny URL is not in the Database!!!");
   } else if (!templateVars.user) {
-    res.redirect("/login");
+    res.status(404).send("Please login to access the tiny URLs");
   } else if (req.session.userId === urlDatabase[req.params.shortURL]['userID']) {
     res.render("urls_show", templateVars);
   } else {
