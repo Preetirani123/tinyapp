@@ -73,7 +73,7 @@ app.post("/login", (req, res) => {
   let email = req.body['email'];
   let password = req.body['password'];
   let userid = getUserByEmail(email, users);
-  if (email === '' || password === '') {
+  if (!email || !password) {
     res.status(400).send('Email or password entry cannot be blank. Please enter email and password!!!');
   } else if (!userid) {
     res.status(403).send('This email is not registered yet. Please register!!!');
@@ -106,7 +106,7 @@ app.post("/register", (req, res) => {
   let newId = generateRandomString(6);
   let email = req.body['email'];
   let password = req.body['password'];
-  if (email === '' || password === '') {
+  if (!email || !password) {
     res.status(400).send('Email or password entry cannot be blank. Please enter email and password!!!');
   } else if (getUserByEmail(email, users)) {
     res.status(400).send('This email is already registered. Please go to login page!!!');
