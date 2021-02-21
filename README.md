@@ -15,7 +15,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["Login Page"](docs/urls-login.png)
 !["Registration Page"](docs/urls-register.png)
 !["My URLs list"](docs/urls-index.png)
-!["URL show/edit"](docs/urls-show.png)
+!["URL show/edit"](docs/url-show.png)
 
 
 ## Dependencies
