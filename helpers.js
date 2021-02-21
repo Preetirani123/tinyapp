@@ -8,7 +8,6 @@ const generateRandomString = function(number) {
   }
   return result;
 }
-//End//
 
 //Retrieve user_id user database for a given email//
 const getUserByEmail = function(email,userDatabase) {
@@ -18,7 +17,6 @@ const getUserByEmail = function(email,userDatabase) {
     }
   }
 }
-//End//
 
 //Filter the urldatabase for logged in user_id//
 const urlsForUser = function(id, urlDatabase) {
@@ -30,7 +28,6 @@ const urlsForUser = function(id, urlDatabase) {
   }
   return databaseFiltered;
 }
-//End//
 
 //list of all shortURLs//
 const allShortURLs = function(urlDatabase){
@@ -40,6 +37,5 @@ const allShortURLs = function(urlDatabase){
   }
   return shortUrlList;
 };
-//End//
 
 module.exports = {getUserByEmail, generateRandomString, urlsForUser, allShortURLs};

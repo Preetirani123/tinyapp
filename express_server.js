@@ -26,7 +26,6 @@ const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "user1RandomID" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" }
 };
-//End//
 
 // Global object user
 const users = {
@@ -41,7 +40,6 @@ const users = {
     password: '$2b$10$sQpjwE9i0GWTV9maz9HBU.BafLcgY5huEcY9lLIFyh0f0G/NP4P6q' //Encrypt("dishwasher-funk")
   }
 };
-//End
 
 //Display url_index page filtered for the logged in user//
 app.get("/urls", (req, res) => {
@@ -53,7 +51,6 @@ app.get("/urls", (req, res) => {
     res.render("urls_login", templateVars);
   }
 });
-//End//
 
 //Display url_new page to create new URL for the logged in user//
 app.get("/urls/new", (req, res) => {
@@ -64,14 +61,12 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_login", templateVars);
   }
 });
-//End//
 
 // Display lgin page//
 app.get("/login", (req, res) => {
   const templateVars = {user : users[req.session.user_id]};
   res.render("urls_login", templateVars);
 });
-//End
 
 //Log in a user//
 app.post("/login", (req, res) => {
@@ -93,21 +88,18 @@ app.post("/login", (req, res) => {
     });
   }
 });
-//End//
 
 //Logout a user//
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
-//End//
 
 // Display registration page//
 app.get("/register", (req, res) => {
   const templateVars = {user : users[req.session.user_id]};
   res.render("urls_register", templateVars);
 });
-//End
 
 //Adding user registration data to the user database//
 app.post("/register", (req, res) => {
@@ -126,7 +118,6 @@ app.post("/register", (req, res) => {
     });
   }
 });
-//End
 
 // Generate Tiny URL id for a long URL and add it to the urldatabase//
 app.post("/urls", (req, res) => {
@@ -134,7 +125,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortID] = {longURL: req.body['longURL'], userID: req.session.user_id };
   res.redirect(`/urls/${shortID}`);
 });
-//End//
 
 //Display individual URL pages for logged in user//
 app.get("/urls/:shortURL", (req, res) => {
@@ -149,14 +139,12 @@ app.get("/urls/:shortURL", (req, res) => {
     res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
   }
 });
-//End//
 
 //Redirect to LongURL sites//
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]['longURL'];
   res.redirect(longURL);
 });
-//End//
 
 //Update a URL in the database//
 app.put("/urls/:shortURL", (req, res) => {
@@ -167,7 +155,6 @@ app.put("/urls/:shortURL", (req, res) => {
     res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
   }
 });
-//End//
 
 //Delete a URL from the database//
 app.delete("/urls/:shortURL", (req, res) => {
@@ -178,10 +165,8 @@ app.delete("/urls/:shortURL", (req, res) => {
     res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
   }
 });
-//End//
 
 //Listening to the port//
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-//End//
