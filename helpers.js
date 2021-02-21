@@ -11,7 +11,7 @@ const generateRandomString = function(number) {
 
 //Retrieve user_id user database for a given email//
 const getUserByEmail = function(email,userDatabase) {
-  for (let user in userDatabase) {
+  for (const user in userDatabase) {
     if (userDatabase[user]['email'] === email) {
         return userDatabase[user]['id']
     }
@@ -21,7 +21,7 @@ const getUserByEmail = function(email,userDatabase) {
 //Filter the urldatabase for logged in user_id//
 const urlsForUser = function(id, urlDatabase) {
   let databaseFiltered = {};
-  for (let url in urlDatabase) {
+  for (const url in urlDatabase) {
     if (urlDatabase[url]['userID'] === id) {
       databaseFiltered[url] = { longURL: urlDatabase[url]['longURL'], userID: urlDatabase[url]['userID'] };
     }
@@ -32,7 +32,7 @@ const urlsForUser = function(id, urlDatabase) {
 //list of all shortURLs//
 const allShortURLs = function(urlDatabase){
   let shortUrlList = [];
-  for (let url in urlDatabase) {
+  for (const url in urlDatabase) {
     shortUrlList.push(url);
   }
   return shortUrlList;
