@@ -4,7 +4,6 @@ const app = express();
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 
-const {compile} = require("ejs");
 app.set("view engine", "ejs");
 
 const bcrypt = require('bcrypt');
@@ -12,8 +11,6 @@ const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-// const cookieParser = require('cookie-parser')
-// app.use(cookieParser());
 const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
@@ -22,7 +19,7 @@ app.use(cookieSession({
 
 const {getUserByEmail, generateRandomString, urlsForUser, allShortURLs} = require("./helpers.js");
 
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
 //Database//
 const urlDatabase = {
@@ -88,7 +85,7 @@ app.post("/login", (req, res) => {
   } else {
     bcrypt.compare(password, users[userid]['password'], (err, result) => {
       if (result) {
-        req.session.user_id = users[userid]['id']; // res.cookie("user_id", userid);
+        req.session.user_id = users[userid]['id'];
         return res.redirect("/urls");
       } else {
         res.status(403).send('Incorrect Password!!!');
@@ -100,7 +97,7 @@ app.post("/login", (req, res) => {
 
 //Logout a user//
 app.post("/logout", (req, res) => {
-  req.session = null;   // res.clearCookie('user_id')
+  req.session = null;
   res.redirect("/urls");
 });
 //End//
@@ -124,7 +121,7 @@ app.post("/register", (req, res) => {
   } else {
     bcrypt.hash(password, 10, function(err, hash) {
       users[newId] = {id: newId, email: email, password: hash};
-      req.session.user_id = users[newId]['id']; // res.cookie("user_id", newId);
+      req.session.user_id = users[newId]['id'];
       res.redirect("/urls");
     });
   }
