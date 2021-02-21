@@ -98,9 +98,13 @@ app.get("/u/:shortURL", (req, res) => {
 
 // Generate Tiny URL id for a long URL and add it to the urldatabase//
 app.post("/urls", (req, res) => {
-  let shortID = generateRandomString(6);
-  urlDatabase[shortID] = {longURL: req.body['longURL'], userID: req.session.user_id };
-  res.redirect(`/urls/${shortID}`);
+  if (req.session.user_id) {
+    let shortID = generateRandomString(6);
+    urlDatabase[shortID] = {longURL: req.body['longURL'], userID: req.session.user_id };
+    res.redirect(`/urls/${shortID}`);
+  } else {
+    res.status(404).send("User is not logged in!!!");
+  }
 });
 
 
