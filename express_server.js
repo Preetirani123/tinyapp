@@ -107,11 +107,11 @@ app.post("/urls", (req, res) => {
   }
 });
 
-
-
 //Update a URL in the database//
 app.put("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
+  if (!req.session.user_id) {
+    res.status(404).send("User is not logged in!!!");
+  } else if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
     urlDatabase[req.params.shortURL]['longURL'] = req.body['longURL'];
     res.redirect("/urls");
   } else {
@@ -120,8 +120,10 @@ app.put("/urls/:shortURL", (req, res) => {
 });
 
 //Delete a URL from the database//
-app.delete("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
+app.delete("/urls/:shortURL/delete", (req, res) => {
+  if (!req.session.user_id) {
+    res.status(404).send("User is not logged in!!!");
+  } else if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else {
