@@ -72,6 +72,65 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+//Display individual URL pages for logged in user//
+app.get("/urls/:shortURL", (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user : users[req.session.user_id]};
+  if (!allShortURLs(urlDatabase).includes(req.params.shortURL)) {
+    res.status(404).send("The Tiny URL is not in the Database!!!");
+  } else if (!templateVars.user) {
+    res.redirect("/login");
+  } else if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
+  }
+});
+
+//Redirect to LongURL sites//
+app.get("/u/:shortURL", (req, res) => {
+  if (!allShortURLs(urlDatabase).includes(req.params.shortURL)) {
+    res.status(404).send("The Tiny URL is not in the Database!!!");
+  } else {
+  const longURL = urlDatabase[req.params.shortURL]['longURL'];
+  res.redirect(longURL);
+  }
+});
+
+// Generate Tiny URL id for a long URL and add it to the urldatabase//
+app.post("/urls", (req, res) => {
+  let shortID = generateRandomString(6);
+  urlDatabase[shortID] = {longURL: req.body['longURL'], userID: req.session.user_id };
+  res.redirect(`/urls/${shortID}`);
+});
+
+
+
+//Update a URL in the database//
+app.put("/urls/:shortURL", (req, res) => {
+  if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
+    urlDatabase[req.params.shortURL]['longURL'] = req.body['longURL'];
+    res.redirect("/urls");
+  } else {
+    res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
+  }
+});
+
+//Delete a URL from the database//
+app.delete("/urls/:shortURL", (req, res) => {
+  if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  } else {
+    res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
+  }
+});
+
+
+
+
+
+
+
 // Display login page//
 app.get("/login", (req, res) => {
   const templateVars = {user : users[req.session.user_id]};
@@ -129,52 +188,12 @@ app.post("/register", (req, res) => {
   }
 });
 
-// Generate Tiny URL id for a long URL and add it to the urldatabase//
-app.post("/urls", (req, res) => {
-  let shortID = generateRandomString(6);
-  urlDatabase[shortID] = {longURL: req.body['longURL'], userID: req.session.user_id };
-  res.redirect(`/urls/${shortID}`);
-});
 
-//Display individual URL pages for logged in user//
-app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user : users[req.session.user_id]};
-  if (!allShortURLs(urlDatabase).includes(req.params.shortURL)) {
-    res.status(404).send("The Tiny URL is not in the Database!!!");
-  } else if (!templateVars.user) {
-    res.redirect("/login");
-  } else if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
-    res.render("urls_show", templateVars);
-  } else {
-    res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
-  }
-});
 
-//Redirect to LongURL sites//
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]['longURL'];
-  res.redirect(longURL);
-});
 
-//Update a URL in the database//
-app.put("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
-    urlDatabase[req.params.shortURL]['longURL'] = req.body['longURL'];
-    res.redirect("/urls");
-  } else {
-    res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
-  }
-});
 
-//Delete a URL from the database//
-app.delete("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect("/urls");
-  } else {
-    res.status(404).send("You are not authorized to see/edit/delete this Tiny URL!!!");
-  }
-});
+
+
 
 //Listening to the port//
 app.listen(PORT, () => {
