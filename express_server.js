@@ -42,13 +42,23 @@ const users = {
 };
 
 //Display url_index page filtered for the logged in user//
+app.get("/", (req, res) => {
+  const templateVars = { user : users[req.session.user_id]};
+  if (templateVars.user) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
+});
+
+//Display url_index page filtered for the logged in user//
 app.get("/urls", (req, res) => {
   let urlDatabaseFiltered = urlsForUser(req.session.user_id, urlDatabase);
   const templateVars = { urls: urlDatabaseFiltered, user : users[req.session.user_id]};
   if (templateVars.user) {
     res.render("urls_index", templateVars);
   } else {
-    res.render("urls_login", templateVars);
+    res.redirect("/login");
   }
 });
 
@@ -58,11 +68,11 @@ app.get("/urls/new", (req, res) => {
   if (templateVars.user) {
     res.render("urls_new", templateVars);
   } else {
-    res.render("urls_login", templateVars);
+    res.redirect("/login");
   }
 });
 
-// Display lgin page//
+// Display login page//
 app.get("/login", (req, res) => {
   const templateVars = {user : users[req.session.user_id]};
   res.render("urls_login", templateVars);
@@ -81,7 +91,7 @@ app.post("/login", (req, res) => {
     bcrypt.compare(password, users[userid]['password'], (err, result) => {
       if (result) {
         req.session.user_id = users[userid]['id'];
-        return res.redirect("/urls");
+        res.redirect("/urls");
       } else {
         res.status(403).send('Incorrect Password!!!');
       }
@@ -132,7 +142,7 @@ app.get("/urls/:shortURL", (req, res) => {
   if (!allShortURLs(urlDatabase).includes(req.params.shortURL)) {
     res.status(404).send("The Tiny URL is not in the Database!!!");
   } else if (!templateVars.user) {
-    res.render("urls_login", templateVars);
+    res.redirect("/login");
   } else if (req.session.user_id === urlDatabase[req.params.shortURL]['userID']) {
     res.render("urls_show", templateVars);
   } else {
