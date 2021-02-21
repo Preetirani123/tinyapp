@@ -172,14 +172,6 @@ app.post("/login", (req, res) => {
   }
 });
 
-//Logout a user//
-app.post("/logout", (req, res) => {
-  req.session = null;
-  res.redirect("/urls");
-});
-
-
-
 //Adding user registration data to the user database//
 app.post("/register", (req, res) => {
   let newId = generateRandomString(6);
@@ -198,12 +190,11 @@ app.post("/register", (req, res) => {
   }
 });
 
-
-
-
-
-
-
+//Logout a user//
+app.post("/logout", (req, res) => {
+  req.session = null;
+  res.redirect("/urls");
+});
 
 //Listening to the port//
 app.listen(PORT, () => {
