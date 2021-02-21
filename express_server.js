@@ -131,16 +131,24 @@ app.delete("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
-
-
-
-
-
-
 // Display login page//
 app.get("/login", (req, res) => {
   const templateVars = {user : users[req.session.user_id]};
-  res.render("urls_login", templateVars);
+  if (templateVars.user) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", templateVars);
+  }
+});
+
+// Display registration page//
+app.get("/register", (req, res) => {
+  const templateVars = {user : users[req.session.user_id]};
+  if (templateVars.user) {
+    res.redirect("/urls");
+  } else {
+  res.render("urls_register", templateVars);
+  }
 });
 
 //Log in a user//
@@ -170,11 +178,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// Display registration page//
-app.get("/register", (req, res) => {
-  const templateVars = {user : users[req.session.user_id]};
-  res.render("urls_register", templateVars);
-});
+
 
 //Adding user registration data to the user database//
 app.post("/register", (req, res) => {
